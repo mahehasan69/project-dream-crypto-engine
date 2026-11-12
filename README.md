@@ -5,6 +5,9 @@
 This repository isolates the cryptographic integration from Project Dream's production Cloudflare Worker. It now includes a browser bootstrap for the official Matrix Rust Crypto WASM state machine.
 
 ## Current code
+- `src/matrix-transport.ts`: HTTPS-only Matrix Client-Server API transport primitives (whoami, devices, key query/upload/claim, sync, to-device send, room-event send). Bearer token is held in memory and never logged.
+- `src/transport-contract.ts`: explicit readiness check; it refuses to assume the custom Project Dream Worker is a Matrix homeserver.
+- `tests/transport-contract.test.ts`: readiness contract tests.
 - `src/matrix-runtime.ts`: initializes `initAsync()` and a persistent browser `OlmMachine`.
 - `src/index.ts`: retains a fail-closed placeholder for the Project Dream app adapter.
 - `src/types.ts`: application-facing types only; not a protocol implementation.
@@ -27,6 +30,7 @@ Before real encryption can ship, we must either adopt Matrix client-server seman
 ```sh
 npm install
 npm run typecheck
+npm test
 ```
 
 ## Upstream references
