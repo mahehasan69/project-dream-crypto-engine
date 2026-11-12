@@ -1,10 +1,12 @@
 export * from "./types.js";
+export * from "./matrix-runtime.js";
 
 import { CryptoUnavailableError } from "./types.js";
 
 /**
- * Fail-closed placeholder. This intentionally cannot encrypt or decrypt.
- * Do not replace it with the experimental lab or raw WebCrypto primitives.
+ * Fail-closed application adapter placeholder.
+ * Matrix OlmMachine initialization alone does not implement Project Dream's
+ * custom message transport or make its messages end-to-end encrypted.
  */
 export const cryptoEngine = {
   protocolId: "unconfigured",
