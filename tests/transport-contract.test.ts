@@ -1,29 +1,27 @@
-import { strict as assert } from "node:assert";
-import { test } from "node:test";
+import { describe, expect, it } from "vitest";
 import { assessMatrixTransport } from "../src/transport-contract.js";
 
-test("does not treat the custom Project Dream Worker as a Matrix homeserver by default", () => {
-  const result = assessMatrixTransport({});
-  assert.equal(result.status, "matrix-homeserver-required");
-});
-
-test("rejects an invalid Matrix user ID", () => {
-  const result = assessMatrixTransport({
-    homeserverUrl: "https://matrix.example.org",
-    matrixUserId: "mahe",
-    matrixDeviceId: "DEVICE_A",
+describe("Matrix transport readiness", () => {
+  it("does not treat Project Dream's custom Worker as a Matrix homeserver by default", () => {
+    expect(assessMatrixTransport({}).status).toBe("matrix-homeserver-required");
   });
-  assert.equal(result.status, "unconfigured");
-});
 
-test("accepts an explicitly provisioned HTTPS Matrix identity", () => {
-  const result = assessMatrixTransport({
-    homeserverUrl: "https://matrix.example.org",
-    matrixUserId: "@alice:example.org",
-    matrixDeviceId: "BROWSER_DEVICE_A",
+  it("rejects an invalid Matrix user ID", () => {
+    expect(assessMatrixTransport({
+      homeserverUrl: "https://matrix.example.org",
+      matrixUserId: "mahe",
+      matrixDeviceId: "DEVICE_A",
+    }).status).toBe("unconfigured");
   });
-  assert.deepEqual(result, {
-    status: "ready",
-    homeserverUrl: "https://matrix.example.org",
+
+  it("accepts an explicitly provisioned HTTPS Matrix identity", () => {
+    expect(assessMatrixTransport({
+      homeserverUrl: "https://matrix.example.org",
+      matrixUserId: "@alice:example.org",
+      matrixDeviceId: "BROWSER_DEVICE_A",
+    })).toEqual({
+      status: "ready",
+      homeserverUrl: "https://matrix.example.org",
+    });
   });
 });
