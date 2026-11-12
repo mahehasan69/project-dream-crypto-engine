@@ -5,12 +5,14 @@
   "type": "module",
   "description": "Isolated E2EE integration boundary for Project Dream; scaffold only",
   "scripts": {
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
   },
   "dependencies": {
     "@matrix-org/matrix-sdk-crypto-wasm": "^19.0.1"
   },
   "devDependencies": {
-    "typescript": "^5.9.0"
+    "typescript": "^5.9.0",
+    "vitest": "^3.2.4"
   }
 }
