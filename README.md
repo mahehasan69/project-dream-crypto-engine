@@ -1,11 +1,19 @@
-# Project Dream Crypto Engine — isolated integration scaffold
+# Project Dream Crypto Engine
 
-**Status: scaffold only. Not production E2EE.**
+**Status: experimental integration scaffold. Not production E2EE.**
 
-This package establishes a safe boundary between Project Dream's chat transport and a future maintained cryptographic implementation. It deliberately does not implement cryptography, derive keys, or encrypt production messages.
+This repository isolates the cryptographic integration from Project Dream's production Cloudflare Worker. It now includes a browser bootstrap for the official Matrix Rust Crypto WASM state machine.
 
-## Why separate?
-Project Dream currently uses a custom Cloudflare Worker + D1 chat backend. Matrix Rust Crypto WASM is a Matrix client crypto state machine, not a drop-in generic encryption function. It requires client integration for device/key APIs and encrypted room-event flows. Importing it alone will not make Project Dream E2EE.
+## Current code
+- `src/matrix-runtime.ts`: initializes `initAsync()` and a persistent browser `OlmMachine`.
+- `src/index.ts`: retains a fail-closed placeholder for the Project Dream app adapter.
+- `src/types.ts`: application-facing types only; not a protocol implementation.
+- `docs/architecture.md`: required transport integration and go-live gates.
+
+## Important limitation
+Matrix Rust Crypto WASM is a no-network-I/O state machine for Matrix clients. It expects the application to exchange Matrix client-server API data with a homeserver. Project Dream currently uses a custom Cloudflare Worker + D1 API. The bootstrap in this repository does not bridge those systems and does not encrypt Project Dream messages.
+
+Before real encryption can ship, we must either adopt Matrix client-server semantics end-to-end or implement and independently review the full required Matrix protocol adapter. Do not treat the bootstrap as a generic `encrypt(bytes)` function.
 
 ## Safety rules
 - Existing production messages and attachments remain unchanged.
@@ -15,16 +23,15 @@ Project Dream currently uses a custom Cloudflare Worker + D1 chat backend. Matri
 - Never silently fall back to plaintext when encryption is expected.
 - Make key changes and unverified devices visible.
 
-## Next engineering steps
-1. Choose the integration model: adopt Matrix client-server semantics end-to-end, or build and independently review a custom transport adapter around a maintained protocol library.
-2. Build a browser adapter with persistent encrypted local state.
-3. Implement authenticated device discovery, key upload/claim, to-device delivery, encrypted send/receive, verification, and recovery.
-4. Add protocol-level tests using two independent browser profiles.
-5. Only after security review, plan an opt-in migration for new conversations. Preserve existing conversations.
+## Development
+```sh
+npm install
+npm run typecheck
+```
 
-## Upstream
-- Crypto WASM: https://github.com/matrix-org/matrix-sdk-crypto-wasm
-- Matrix JS SDK: https://github.com/matrix-org/matrix-js-sdk
-- Rust SDK: https://github.com/matrix-org/matrix-rust-sdk
-
-See `docs/architecture.md`.
+## Upstream references
+- [Crypto WASM source](https://github.com/matrix-org/matrix-sdk-crypto-wasm)
+- [Crypto WASM API docs](https://matrix-org.github.io/matrix-sdk-crypto-wasm/)
+- [OlmMachine API](https://matrix-org.github.io/matrix-sdk-crypto-wasm/classes/OlmMachine.html)
+- [Rust crypto tutorial](https://matrix-org.github.io/matrix-rust-sdk/matrix_sdk_crypto/tutorial/index.html)
+- [Matrix JS SDK](https://github.com/matrix-org/matrix-js-sdk)
