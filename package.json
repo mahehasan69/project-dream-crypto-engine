@@ -1,0 +1,16 @@
+{
+  "name": "@project-dream/crypto-engine",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Isolated E2EE integration boundary for Project Dream; scaffold only",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@matrix-org/matrix-sdk-crypto-wasm": "^19.0.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.0"
+  }
+}
