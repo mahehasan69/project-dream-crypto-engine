@@ -1,7 +1,20 @@
 # Architecture decision record
 
-## Candidate
-Evaluate Matrix Rust Crypto WASM (`@matrix-org/matrix-sdk-crypto-wasm`) as the browser cryptographic state machine. It exposes `OlmMachine` and is a no-network-I/O state machine. The client application must implement Matrix client-server API integration. It is not a generic `encrypt(bytes)` SDK and does not automatically fit Project Dream's custom D1 schema.
+## Selected candidate and current milestone
+
+Use the official Matrix Rust Crypto WASM state machine (`@matrix-org/matrix-sdk-crypto-wasm`) as the candidate cryptographic engine. The package is initialized by `src/matrix-runtime.ts` using `initAsync()` and `OlmMachine.initialize()`. On web, the SDK supports IndexedDB-backed persistence.
+
+**This milestone is runtime bootstrap only. It is not message encryption and does not make Project Dream E2EE.**
+
+## Critical integration decision
+
+The Rust crypto library is a no-network-I/O state machine. It expects the application to exchange Matrix client-server protocol data with a homeserver: sync responses, device/key APIs, to-device messages, and encrypted room events. Project Dream currently has a custom Cloudflare Worker + D1 transport.
+
+There are two honest paths:
+1. Adopt Matrix client-server semantics for the messaging backend (which is a significant backend and data-model migration); or
+2. Build and independently review a complete protocol adapter implementing the required Matrix client-server API surface over the custom backend.
+
+Do not call `OlmMachine` directly from Project Dream's existing message send route and assume encryption is integrated.
 
 ## Required integration
 - Persistent IndexedDB crypto state; single-instance ownership per browser profile.
